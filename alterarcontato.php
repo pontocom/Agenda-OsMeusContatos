@@ -1,38 +1,139 @@
-<?php
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Jekyll v3.8.6">
+    <title>OsMeusContatos - Gestão de Contatos na Web</title>
 
-    function make_thumb($src, $dest, $max_size) {
-        /* read the source image */
-        $source_image = imagecreatefromjpeg($src);
-        $width = imagesx($source_image);
-        $height = imagesy($source_image);
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
 
-        /* create a new, "virtual" image */
-        $virtual_image = imagecreatetruecolor($max_size, $max_size);
-
-        /* copy source image at a resized size */
-        imagecopyresampled($virtual_image, $source_image, 0, 0, 0, 0, $max_size, $max_size, $width, $height);
-
-        /* create the physical thumbnail image to its destination */
-        imagejpeg($virtual_image, $dest);
-    }
-
-    //connect to the database server
-    $conn = mysqli_connect("localhost", "root", "demo123", "meuscontatos") or die("Não consegui ligar à base de dados");
-    $sql = "INSERT INTO contact (cname, cmorada, ctelefone, cemail, cfoto) VALUES ('".$_REQUEST['nome']."', '".$_REQUEST['morada']."', '".$_REQUEST['telefone']."', '".$_REQUEST['email']."', '".$_FILES['foto']['name']."')";
-    //echo $sql;
-
-    if(mysqli_query($conn, $sql)) {
-        // se a introdução do novo registo correu bem, então vamos fazer o upload do ficheiro
-        if($_FILES['foto']['error'] > 0 ) { // erro ao carregar o ficheiro
-            header("Location: novocontato.php?status=false");
-        } else {
-            make_thumb($_FILES['foto']['tmp_name'], "imagens/".$_FILES['foto']['name'], 80);
-            //move_uploaded_file($_FILES['foto']['tmp_name'], "imagens/".$_FILES['foto']['name']);
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
-        header("Location: novocontato.php?status=true");
-    } else {
-        header("Location: novocontato.php?status=false");
-    }
 
-    mysqli_close($conn);
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        body {
+            padding-top: 5rem;
+        }
+        .starter-template {
+            padding: 3rem 1.5rem;
+            text-align: center;
+        }
+
+    </style>
+
+    <script>
+        function validateAndSubmit() {
+            if(document.getElementById("nome").value == "") {
+                alert('O nome não pode estar vazio!');
+            } else if (document.getElementById("morada").value == "") {
+                alert('A morada não pode estar vazia!');
+            } else if (document.getElementById("telefone").value == "") {
+                alert('O telefone não pode estar vazio!');
+            } else if (document.getElementById("email").value == "") {
+                alert('O email não pode estar vazio!');
+            } else {
+                document.getElementById("novocontato").submit();
+            }
+        }
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand" href="#">OsMeusContatos - Gestor de Contatos</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="index.php">Home</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="novocontato.php">Novo Contato</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="contatos.php">Lista de Contatos</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+            <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </div>
+</nav>
+
+<?php
+//connect to the database server
+$conn = mysqli_connect("localhost", "root", "demo123", "meuscontatos") or die("Não consegui ligar à base de dados");
+
+// primeiro vamos ter que ler o nome do ficheiro da imagem da BD
+$sql1 = "SELECT * FROM contact WHERE id=".$_REQUEST['id'];
+$result = mysqli_query($conn, $sql1);
+$row = mysqli_fetch_assoc($result);
+mysqli_close($conn);
 ?>
+<main role="main" class="container">
+
+    <h1>Alterar Contato</h1>
+    <p>Faça as modificações ao contato.</p>
+
+    <form id="novocontato" action="addcontato.php" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Nome</label>
+            <input type="text" class="form-control" id="nome" name="nome" value="<?php echo $row['cname']; ?>">
+        </div>
+        <div class="form-group">
+            <label>Morada</label>
+            <input type="text" class="form-control" id="morada" name="morada" value="<?php echo $row['cmorada']; ?>">
+        </div>
+        <div class="form-group">
+            <label>Telefone</label>
+            <input type="text" class="form-control" id="telefone" name="telefone" value="<?php echo $row['ctelefone']; ?>">
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input type="text" class="form-control" id="email" name="email" value="<?php echo $row['cemail']; ?>">
+        </div>
+        <button type="button" class="btn btn-primary" onclick="validateAndSubmit()">Alterar</button>
+        <br>
+        <?php
+        if(isset($_REQUEST['status']) && $_REQUEST['status']!=""){
+            if ($_REQUEST['status']=="false") {
+                ?>
+                <div class="alert alert-danger" role="alert">
+                    Ocorreu algum erro na introdução do registo!
+                </div>
+                <?php
+            }
+            if ($_REQUEST['status']=="true") {
+                ?>
+                <div class="alert alert-success" role="alert">
+                    Contato introduzido!
+                </div>
+                <?php
+            }
+        }
+        ?>
+    </form>
+</main><!-- /.container -->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script>window.jQuery || document.write('<script src="/docs/4.4/assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="/docs/4.4/dist/js/bootstrap.bundle.min.js" integrity="sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm" crossorigin="anonymous"></script></body>
+</html>
+
