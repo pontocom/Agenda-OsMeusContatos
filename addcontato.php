@@ -1,4 +1,5 @@
 <?php
+session_start();
 
     function make_thumb($src, $dest, $max_size) {
         /* read the source image */
@@ -17,8 +18,8 @@
     }
 
     //connect to the database server
-    $conn = mysqli_connect("localhost", "root", "demo123", "meuscontatos") or die("Não consegui ligar à base de dados");
-    $sql = "INSERT INTO contact (cname, cmorada, ctelefone, cemail, cfoto) VALUES ('".$_REQUEST['nome']."', '".$_REQUEST['morada']."', '".$_REQUEST['telefone']."', '".$_REQUEST['email']."', '".$_FILES['foto']['name']."')";
+    $conn = mysqli_connect("localhost", "root", "demo123", "meuscontatosdemo") or die("Não consegui ligar à base de dados");
+    $sql = "INSERT INTO contact (cname, cmorada, ctelefone, cemail, cfoto, id_user) VALUES ('".$_REQUEST['nome']."', '".$_REQUEST['morada']."', '".$_REQUEST['telefone']."', '".$_REQUEST['email']."', '".$_FILES['foto']['name']."', ".$_SESSION['session_user_id'].")";
     //echo $sql;
 
     if(mysqli_query($conn, $sql)) {

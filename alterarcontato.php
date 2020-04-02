@@ -1,3 +1,8 @@
+<?php
+session_start();
+if(!isset($_SESSION['isLoggedIn']) && $_SESSION['isLoggedIn']!=true)
+    header("Location: login.php");
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -71,6 +76,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="contatos.php">Lista de Contatos</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="logout.php">Logout</a>
+            </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
@@ -81,7 +89,7 @@
 
 <?php
 //connect to the database server
-$conn = mysqli_connect("localhost", "root", "demo123", "meuscontatos") or die("Não consegui ligar à base de dados");
+$conn = mysqli_connect("localhost", "root", "demo123", "meuscontatosdemo") or die("Não consegui ligar à base de dados");
 
 // primeiro vamos ter que ler o nome do ficheiro da imagem da BD
 $sql1 = "SELECT * FROM contact WHERE id=".$_REQUEST['id'];
@@ -94,9 +102,10 @@ mysqli_close($conn);
     <h1>Alterar Contato</h1>
     <p>Faça as modificações ao contato.</p>
 
-    <form id="novocontato" action="addcontato.php" method="post" enctype="multipart/form-data">
+    <form id="novocontato" action="alterar.php" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label>Nome</label>
+            <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
             <input type="text" class="form-control" id="nome" name="nome" value="<?php echo $row['cname']; ?>">
         </div>
         <div class="form-group">

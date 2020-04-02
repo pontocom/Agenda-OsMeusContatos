@@ -1,3 +1,8 @@
+<?php
+session_start();
+if(!isset($_SESSION['isLoggedIn']) && $_SESSION['isLoggedIn']!=true)
+    header("Location: login.php");
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -70,6 +75,9 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="contatos.php">Lista de Contatos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="logout.php">Logout</a>
             </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">
