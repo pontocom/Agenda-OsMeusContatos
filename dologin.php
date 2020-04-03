@@ -13,6 +13,7 @@ if(mysqli_num_rows($result) > 0) {
     $row = mysqli_fetch_assoc($result);
     $_SESSION['isLoggedIn'] = true;
     $_SESSION['session_user_id'] = $row['id'];
+    $_SESSION['session_username'] = $row['username'];
     header("Location: index.php");
 } else {
     header("Location: login.php?status=false");
