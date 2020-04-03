@@ -1,8 +1,12 @@
 <?php
 session_start();
+$options = [
+    'salt' => 'iuwqyiruewyiteyweitywietyiuweyt',
+    'cost' => 10
+];
 //connect to the database server
 $conn = mysqli_connect("localhost", "root", "demo123", "meuscontatosdemo") or die("Não consegui ligar à base de dados");
-$sql = "SELECT * FROM utilizadores WHERE username='".$_REQUEST['username']."' AND password='".sha1($_REQUEST['password'])."'";
+$sql = "SELECT * FROM utilizadores WHERE username='".$_REQUEST['username']."' AND password='".password_hash($_REQUEST['password'], PASSWORD_BCRYPT, $options)."'";
 $result = mysqli_query($conn, $sql);
 
 if(mysqli_num_rows($result) > 0) {
